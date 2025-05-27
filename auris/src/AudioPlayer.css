@@ -1,0 +1,161 @@
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.time-display {
+  min-width: 100px;
+  text-align: center;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.beat-visualizer {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 120px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 16px;
+}
+
+.beat {
+  flex: 1;
+  background-color: #1890ff;
+  transition: all 0.1s ease;
+  border-radius: 2px;
+}
+
+.beat.active-beat {
+  background-color: #ff4d4f;
+  transform: scaleY(1.2);
+}
+
+.beat-timeline {
+  position: relative;
+  height: 20px;
+  margin-bottom: 16px;
+}
+
+.beat-markers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.beat-marker {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #ff4d4f;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  top: 50%;
+}
+
+.beat-marker.passed {
+  background-color: #52c41a;
+}
+
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.time-display {
+  font-size: 14px;
+  min-width: 100px;
+  text-align: center;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Стили для визуализации битов */
+.beat-visualizer {
+  display: flex;
+  align-items: flex-end;
+  height: 120px;
+  overflow-x: auto;
+  padding: 10px;
+  background-color: #f0f2f5;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.beat {
+  width: 8px;
+  margin-right: 3px;
+  border-radius: 2px 2px 0 0;
+  transition: background-color 0.2s ease;
+}
+
+.beat.active-beat {
+  box-shadow: 0 0 8px #ff4d4f;
+}
+
+.no-beats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80px;
+  color: #999;
+  font-style: italic;
+}
+
+/* Beat timeline styles */
+.beat-timeline {
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.beat-markers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.beat-marker {
+  position: absolute;
+  width: 2px;
+  height: 16px;
+  background-color: #52c41a;
+  top: -8px;
+  transform: translateX(-50%);
+}
+
+.beat-marker.passed {
+  background-color: #faad14;
+}
+
+/* Responsive design */
+@media (max-width: 576px) {
+  .player-controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .volume-control {
+    margin-top: 10px;
+  }
+}

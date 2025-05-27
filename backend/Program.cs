@@ -1,10 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Добавляем поддержку Swagger
+builder.Services.AddEndpointsApiExplorer();
+
+// Конфигурация для загрузки файлов
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 100 * 1024 * 1024; // 100 MB
+});
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -20,8 +28,6 @@ builder.Services.AddCors(options =>
               .AllowCredentials(); // Если используете куки/аутентификацию
     });
 });
-
-
 
 
 var app = builder.Build();
