@@ -21,8 +21,9 @@ export const AudioPlayer = () => {
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number>(null);
+  const visualizationRef = useRef<HTMLDivElement>(null);
+
 
   // Инициализация аудио контекста
   const initializeAudioContext = useCallback(async () => {
@@ -42,6 +43,26 @@ export const AudioPlayer = () => {
     }
   }, []);
 
+  // Автоматическая прокрутка к текущей доле
+  const scrollToCurrentBeat = useCallback(() => {
+    if (visualizationRef.current && currentBeatIndex >= 0) {
+      const containerRect = visualizationRef.current.getBoundingClientRect();
+       const containerWidth = visualizationRef.current.clientWidth;
+    
+
+      const elementRect  = (document.querySelector(`div[data-beatIndex='${currentBeatIndex}']`) as HTMLElement)?.getBoundingClientRect();
+
+        const elementLeft = elementRect.left - containerRect.left + visualizationRef.current.scrollLeft;
+      const scrollPosition = elementLeft + elementRect.width / 2 - containerWidth / 2;
+
+    
+      visualizationRef.current.scrollTo({
+        left: Math.max(0, scrollPosition),
+        behavior: 'smooth'
+      });
+    }
+  }, [currentBeatIndex]);
+
   const analyzeBeats = useCallback(async (audioBuffer: ArrayBuffer) => {
     if (!audioContextRef.current) return;
 
@@ -56,8 +77,7 @@ export const AudioPlayer = () => {
       const hopSize = 512;
       const detectedBeats: BeatInfo[] = [];
 
-      // Анализ энергии в окнах
-      const totalWindows = Math.floor((channelData.length - windowSize) / hopSize);
+   
       
       for (let i = 0; i < channelData.length - windowSize; i += hopSize) {
         const windowData = channelData.slice(i, i + windowSize);
@@ -98,7 +118,7 @@ export const AudioPlayer = () => {
 
       // Определение сильных и обычных долей
       const energies = detectedBeats.map(beat => beat.energy);
-      const maxEnergy = Math.max(...energies);
+    
       const avgEnergy = energies.reduce((sum, e) => sum + e, 0) / energies.length;
       const stdDev = Math.sqrt(energies.reduce((sum, e) => sum + Math.pow(e - avgEnergy, 2), 0) / energies.length);
       
@@ -202,6 +222,14 @@ export const AudioPlayer = () => {
       setCurrentBeatIndex(activeBeatIndex);
     }
   }, [isPlaying, beats]);
+
+
+  // Эффект для автопрокрутки при изменении текущей доли
+  useEffect(() => {
+    if (isPlaying && currentBeatIndex >= 0) {
+      scrollToCurrentBeat();
+    }
+  }, [currentBeatIndex, isPlaying, scrollToCurrentBeat]);
 
   // Анимационный цикл
   useEffect(() => {
@@ -435,7 +463,11 @@ export const AudioPlayer = () => {
                   {/* Визуализация */}
                   {allBeats.length > 0 ? (
                     <div className="bg-gradient-to-t from-gray-100 to-white border-2 border-gray-200 rounded-xl p-4 overflow-hidden">
-                      <div className="h-40 flex items-end gap-1 overflow-x-auto pb-2">
+                        <div 
+                        ref={visualizationRef}
+                        className="h-40 flex items-end gap-1 overflow-x-auto pb-2 scroll-smooth"
+                        style={{ scrollbarWidth: 'thin', scrollbarColor: '#8b5cf6 #e5e7eb' }}
+                      >
                         {allBeats.map((beat, index) => {
                           const height = Math.max(Math.min(beat.energy * 800, 100), 15);
                           const isActive = index === currentBeatIndex;
@@ -454,6 +486,7 @@ export const AudioPlayer = () => {
                                 minWidth: '10px',
                                 width: '6px'
                               }}
+                              data-beatIndex={index}
                               title={`${beat.time.toFixed(2)}с - ${isStrong ? 'Сильная' : 'Обычная'} доля`}
                             >
                               <div 
